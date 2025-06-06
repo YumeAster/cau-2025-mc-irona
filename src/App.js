@@ -9,6 +9,8 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/alarm" element={<AlarmSettingPage />} />
+        <Route path="/alarm/new" element={<AlarmSettingPage isNew />} />
+        <Route path="/alarm/:id" element={<AlarmSettingPage />} />
       </Routes>
     </Router>
   );

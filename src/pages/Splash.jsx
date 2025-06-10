@@ -21,7 +21,7 @@ const Splash = () => {
 
     const timeout = setTimeout(() => {
       navigate('/HomePage');
-    }, 10000);
+    }, 5000);
 
     return () => {
       clearInterval(clockInterval);

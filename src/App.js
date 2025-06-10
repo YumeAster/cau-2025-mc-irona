@@ -3,7 +3,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Splash from './pages/Splash';
 import HomePage from './pages/HomePage';
 import AlarmSettingPage from './pages/AlarmSettingPage';
-import AppSettingPage from './pages/AppSettingPage'; //앱설정 페이지 추가
+import AppSettingPage from './pages/AppSettingPage'; 
+import LicensePage from './pages/LicensePage';
+import BlacklistPage from './pages/BlacklistPage';
 
 
 function App() {
@@ -16,6 +18,9 @@ function App() {
         <Route path="/alarm/new" element={<AlarmSettingPage isNew />} />
         <Route path="/alarm/:id" element={<AlarmSettingPage />} />
         <Route path="/settings" element={<AppSettingPage />} />
+        <Route path="/license" element={<LicensePage />} />
+        <Route path="/blacklist" element={<BlacklistPage />} /> 
+
 
       </Routes>
     </Router>

@@ -1,13 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const initialGames = ['a', 'b', 'c', 'd', 'e', 'f'];
+const STORAGE_KEY = 'blacklist_games';
 
 export default function BlacklistPage() {
   const navigate = useNavigate();
-  const [blacklist, setBlacklist] = useState(
-    Object.fromEntries(initialGames.map((game) => [game, false]))
-  );
+  const [blacklist, setBlacklist] = useState({});
+
+  // 🔹 처음 진입 시 localStorage에서 불러오기
+  useEffect(() => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      setBlacklist(JSON.parse(stored));
+    } else {
+      // 처음이면 false로 초기화
+      const initialState = Object.fromEntries(initialGames.map((game) => [game, false]));
+      setBlacklist(initialState);
+    }
+  }, []);
+
+  // 🔹 상태가 바뀔 때마다 localStorage에 저장
+  useEffect(() => {
+    if (Object.keys(blacklist).length > 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(blacklist));
+    }
+  }, [blacklist]);
 
   const toggleGame = (game) => {
     const updated = { ...blacklist, [game]: !blacklist[game] };
@@ -36,7 +54,7 @@ export default function BlacklistPage() {
             <label className="inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
-                checked={blacklist[game]}
+                checked={blacklist[game] || false}
                 onChange={() => toggleGame(game)}
                 className="sr-only"
               />

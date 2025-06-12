@@ -53,7 +53,7 @@ export default function BlacklistPage() {
             <span className="text-lg font-medium">게임 {game.toUpperCase()}</span>
             <label className="inline-flex items-center cursor-pointer">
               <input
-                type="checkbox"
+                type="checkbox" 
                 checked={blacklist[game] || false}
                 onChange={() => toggleGame(game)}
                 className="sr-only"

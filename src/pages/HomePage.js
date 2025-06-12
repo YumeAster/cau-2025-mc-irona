@@ -79,6 +79,45 @@ export default function HomePage() {
     navigate(location.pathname, { replace: true, state: null });
   }, [location, navigate]);
 
+  /* -------------------- 알람 재생 -------------------- */
+
+  useEffect(() => {
+  const interval = setInterval(() => {
+    console.log("⏰ 타이머 작동 중"); // ✅ 콘솔 확인용
+    const now = new Date();
+    const nowStr = now.toTimeString().slice(0, 5); // "HH:MM"
+
+    setAlarmList((prev) =>
+      prev.map((alarm) => {
+        if (!alarm.enabled || alarm.time !== nowStr) return alarm;
+
+        const today = new Date().getDay(); // 0(일) ~ 6(토)
+        const weekdayMatch = alarm.useRepeat || alarm.weekdays.includes(today);
+
+        if (weekdayMatch) {
+          if (alarm.category === "game") {
+            navigate(`/alarm/game/${alarm.id}`, { state: { alarm } });
+          } else {
+            navigate(`/alarm/ring/${alarm.id}`, { state: { alarm } }); // ✅ 알람 객체 직접 전달
+          }
+          
+          if (!alarm.useRepeat) {
+            return { ...alarm, enabled: false };  
+          }
+
+          if (!alarm.useRepeat) {
+            return { ...alarm, enabled: false };
+          }
+        }
+
+        return alarm;
+      })
+    );
+  }, 1000); // 1분마다 체크
+
+  return () => clearInterval(interval);
+}, []);
+
   /* -------------------- 로컬스토리지 동기화 -------------------- */
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(alarmList));

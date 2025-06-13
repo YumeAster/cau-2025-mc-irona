@@ -5,6 +5,13 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FiMoreVertical, FiPlus } from "react-icons/fi";
 
+import {
+  initGoogleAPI,
+  getStoredGoogleUser,
+  saveToDrive,
+  loadFromDrive,
+} from "../utils/googleDrive";
+
 /* ------------------------------------------------------------------
  * 디자인용 아이콘 (이모지)
  * ----------------------------------------------------------------*/
@@ -53,10 +60,22 @@ export default function HomePage() {
   const persisted = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
   const [alarmList, setAlarmList] = useState(persisted ?? []);
 
+  /* -------------------- 구글 드라이브 -------------------- */
+  let isGoogleLogin = getStoredGoogleUser();
+  let googleUserName = isGoogleLogin ? isGoogleLogin.name : null;
+
+  const handleManualSave = async () => {
+    await saveToDrive(alarmList);
+  };
+
+  const handleManualLoad = async () => {
+    const data = await loadFromDrive();
+    if (data) setAlarmList(data);
+  };
+
   /* -------------------- location.state 병합 (add / update / delete) -------------------- */
   useEffect(() => {
     if (!location.state) return;
-
     setAlarmList((prev) => {
       // 삭제
       if (location.state.deleteId) {
@@ -79,8 +98,11 @@ export default function HomePage() {
     navigate(location.pathname, { replace: true, state: null });
   }, [location, navigate]);
 
-  /* -------------------- 로컬스토리지 동기화 -------------------- */
+  /* -------------------- 로컬스토리지 동기화 & 구글 드라이브 초기화 -------------------- */
   useEffect(() => {
+    initGoogleAPI().then(() => {
+      console.log("✅ Google API ready");
+    });
     localStorage.setItem(STORAGE_KEY, JSON.stringify(alarmList));
   }, [alarmList]);
 
@@ -101,7 +123,7 @@ export default function HomePage() {
   /* -------------------- + 버튼 (길게/짧게) -------------------- */
   const pressTimerRef = useRef(null);
   const [showQuickModal, setShowQuickModal] = useState(false);
-  const [quickTime, setQuickTime] = useState("06:00");
+  const [quickTime, setQuickTime] = useState("00:00");
 
   const onPlusDown = () => {
     pressTimerRef.current = setTimeout(() => setShowQuickModal(true), 600);
@@ -173,9 +195,29 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 헤더 */}
-      <header className="bg-white px-6 pt-12 pb-4 shadow">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">알람 목록 화면</h1>
+          <header className="bg-white px-6 pt-12 pb-4 shadow">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-900">알람 목록 화면</h1>
+        <div className="flex items-center gap-2">
+          {isGoogleLogin ? (
+            <>
+              <span className="text-sm text-gray-700">{googleUserName}</span>
+
+              {/* ✅ 수동 저장/불러오기 버튼 */}
+              <button
+                onClick={handleManualLoad}
+                className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm"
+              >
+                불러오기
+              </button>
+              <button
+                onClick={handleManualSave}
+                className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm"
+              >
+                저장하기
+              </button>
+            </>
+          ) : (<></>)}
           <button
             onClick={goSettings}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -185,7 +227,8 @@ export default function HomePage() {
             <FiMoreVertical size={22} />
           </button>
         </div>
-      </header>
+      </div>
+    </header>
 
       {/* 알람 리스트 */}
       <main className="px-4 py-2">

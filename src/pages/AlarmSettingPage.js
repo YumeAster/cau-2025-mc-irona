@@ -13,7 +13,7 @@ export default function AlarmSettingPage() {
   const existing = location.state?.alarm;
 
   // ✨ 기본값으로 안전하게 처리
-  const [alarmTime, setAlarmTime] = useState(existing?.time || "06:15");
+  const [alarmTime, setAlarmTime] = useState(existing?.time || "00:00");
   const [isGameAlarm, setIsGameAlarm] = useState(existing?.category === "game");
   const [isRepeatMode, setIsRepeatMode] = useState(existing?.useRepeat || false);
   const [repeatRules, setRepeatRules] = useState(existing?.repeatRules || []);

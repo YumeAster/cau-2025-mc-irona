@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FiMoreVertical, FiPlus } from "react-icons/fi";
 import { SiGoogledrive } from "react-icons/si";
+import dayjs from "dayjs";
 
 import {
   initGoogleAPI,
@@ -110,6 +111,61 @@ export default function HomePage() {
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(alarmList));
   }, [alarmList]);
+
+  /* ------------------------------------------------------------------
+      정해진 시간에 알람 실행
+   * ----------------------------------------------------------------*/
+const firedMapRef = useRef({}); // { alarmId: "YYYY-MM-DD" }
+
+useEffect(() => {
+  let timerId;
+
+  // 1) 알람 조건 검사 함수
+  const runCheck = () => {
+    const now          = dayjs();
+    const hhmm         = now.format("HH:mm");
+    const todayWday    = now.day();           // 0=Sun … 6=Sat
+    const todayStr     = now.format("YYYY-MM-DD");
+
+    alarmList.forEach((alarm) => {
+      if (!alarm.enabled) return;
+      if (firedMapRef.current[alarm.id] === todayStr) return;   // 이미 울렸음
+      if (alarm.time !== hhmm)          return;                 // 시간 불일치
+      if (Array.isArray(alarm.weekdays) &&
+          alarm.weekdays.length > 0 &&
+          !alarm.weekdays.includes(todayWday)) return;          // 요일 불일치
+
+      /* ---- 알람 실행 ---- */
+      switch (alarm.category) {
+        case "quick":
+          alert("quick 알람실행");
+          setAlarmList((prev) => prev.filter((a) => a.id !== alarm.id));
+          break;
+        case "game":
+          alert("game 알람실행");
+          break;
+        default:
+          alert("basic 알람실행");
+      }
+      firedMapRef.current[alarm.id] = todayStr; // 중복 방지
+    });
+  };
+
+  // 2) 다음 “분 경계(00초)” 까지 예약 → 이후 1분마다 재귀
+  const scheduleNext = () => {
+    const msUntilNextMinute = 60_000 - (Date.now() % 60_000);
+    timerId = setTimeout(() => {
+      runCheck();     // 정확히 00초 즈음 실행
+      scheduleNext(); // 다음 분 예약
+    }, msUntilNextMinute);
+  };
+
+  scheduleNext();     // 첫 예약
+
+  return () => clearTimeout(timerId); // 언마운트/알람목록 변경 시 정리
+}, [alarmList]);
+
+
 
   /* -------------------- 토글 -------------------- */
   const handleToggle = useCallback((id) => {

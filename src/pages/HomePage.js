@@ -4,6 +4,7 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FiMoreVertical, FiPlus } from "react-icons/fi";
+import { SiGoogledrive } from "react-icons/si";
 
 import {
   initGoogleAPI,
@@ -61,8 +62,7 @@ export default function HomePage() {
   const [alarmList, setAlarmList] = useState(persisted ?? []);
 
   /* -------------------- 구글 드라이브 -------------------- */
-  let isGoogleLogin = getStoredGoogleUser();
-  let googleUserName = isGoogleLogin ? isGoogleLogin.name : null;
+  const isLoggedIn = getStoredGoogleUser();
 
   const handleManualSave = async () => {
     await saveToDrive(alarmList);
@@ -70,7 +70,10 @@ export default function HomePage() {
 
   const handleManualLoad = async () => {
     const data = await loadFromDrive();
-    if (data) setAlarmList(data);
+    if (data) {
+      setAlarmList(data);
+      alert("Drive에서 불러왔습니다!");
+    }
   };
 
   /* -------------------- location.state 병합 (add / update / delete) -------------------- */
@@ -103,6 +106,8 @@ export default function HomePage() {
     initGoogleAPI().then(() => {
       console.log("✅ Google API ready");
     });
+  }, []);
+  useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(alarmList));
   }, [alarmList]);
 
@@ -199,9 +204,9 @@ export default function HomePage() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-900">알람 목록 화면</h1>
         <div className="flex items-center gap-2">
-          {isGoogleLogin ? (
+          {isLoggedIn ? (
             <>
-              <span className="text-sm text-gray-700">{googleUserName}</span>
+              <SiGoogledrive size={22} color="#4285F4" />
 
               {/* ✅ 수동 저장/불러오기 버튼 */}
               <button

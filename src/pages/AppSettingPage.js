@@ -1,13 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import "./AppSettingPage.css";
 import { useNavigate } from "react-router-dom";
+import {
+  getStoredGoogleUser,
+  loginGoogle,
+  logoutGoogle
+} from "../utils/googleDrive";
 
 export default function AppSettingPage() {
   const navigate = useNavigate();
 
   // 로그인 상태 시 사용자 이메일, 로그인 안됐을 경우 false
-  const isLoggedIn = true;
-  const userEmail = "example@gmail.com";
+  const [googleUser, setGoogleUser] = useState(getStoredGoogleUser());
+
+  const handleLogin = async () => {
+      await loginGoogle();
+      setGoogleUser(getStoredGoogleUser());
+  };
+
+  const handleLogout = async () => {
+      logoutGoogle();
+      setGoogleUser(getStoredGoogleUser());
+  };
 
   return (
     <div className="settings-container">
@@ -19,12 +33,29 @@ export default function AppSettingPage() {
 
       <div className="button-group">
         {/* 계정 설정 버튼 */}
-        <button className="block-button" onClick={() => alert("계정 설정으로 이동")}> 
-          계정 설정
-          <span className="account-status-text">
-            {isLoggedIn ? userEmail : "로그인하지 않았습니다."}
-          </span>
-        </button>
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-gray-900">알람 목록 확인</h1>
+          <div className="flex items-center gap-2">
+            {googleUser ? (
+              <><span className="text-sm text-gray-700">{googleUser.name}</span>
+              <button onClick={handleLogout} className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm">
+                  로그아웃
+                </button>
+                </>
+            ) : (
+              <>
+              <button
+              onClick={handleLogin}
+              className="px-3 py-1 bg-blue-100 hover:bg-blue-200 rounded-lg text-sm text-blue-700"
+            >
+              Google 로그인
+            </button>
+            </>
+            )}
+            
+          </div>
+        </div>
+
 
         {/* 난이도 슬라이더 */}
         <div className="slider-block">

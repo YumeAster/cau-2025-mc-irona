@@ -31,14 +31,14 @@ export default function AlarmSettingPage() {
       repeatRules: isRepeatMode ? repeatRules : [],
       weekdays: isRepeatMode ? [] : selectedWeekdays,
     };
-    navigate("/", { state: { alarm: alarmData } });
+    navigate("/HomePage", { state: { alarm: alarmData } });
   };
 
   const handleDelete = () => {
     if (existing) {
-      navigate("/", { state: { deleteId: existing.id } });
+      navigate("/HomePage", { state: { deleteId: existing.id } });
     } else {
-      navigate("/");
+      navigate("/HomePage");
     }
   };
 

@@ -29,11 +29,36 @@ export default function AlarmRingPage() {
 
   const handleSnooze = () => {
     alert(`${snoozeMin}분 뒤에 다시 울릴게요!`);
-    navigate("/");
+
+    alarm.enabled = false;
+
+    let alarmNum = alarm.time.split(":");
+    let alarmHour = parseInt(alarmNum[0]);
+    let alarmMinute = parseInt(alarmNum[1]);
+
+    alarmMinute += snoozeMin;
+
+    if(alarmMinute >= 60) {
+      alarmHour += Math.floor(alarmMinute / 60)
+      alarmMinute %= 60;
+    }
+
+    const alarmData = {
+      id: Date.now(),
+      category: "quick",
+      title: `${snoozeMin}분 후 울리는 알람`,
+      time: `${alarmHour}:${alarmMinute}`,
+      useRepeat: alarm.isRepeatMode,
+      enabled: true,
+      repeatRules: alarm.repeatRules,
+      weekdays: alarm.selectedWeekdays,
+    };
+
+    navigate("/HomePage", { state: { alarms: [alarm, alarmData] } });
   };
 
   const handleDismiss = () => {
-    navigate("/");
+    navigate("/HomePage");
   };
 
   const handleMouseDown = (e) => setStartY(e.clientY);

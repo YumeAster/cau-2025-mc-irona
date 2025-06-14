@@ -32,13 +32,11 @@ export default function AppSettingPage() {
           <div className="slider-container">
             <img src="https://emojicdn.elk.sh/🐢" alt="거북이" className="slider-icon" />
             <div className="slider-wrapper">
-              <input type="range" min="1" max="5" defaultValue="3" step="1" />
+              <input type="range" min="1" max="3" defaultValue="2" step="1" />
               <div className="slider-ticks">
                 <span>1</span>
                 <span>2</span>
                 <span>3</span>
-                <span>4</span>
-                <span>5</span>
               </div>
             </div>
             <img src="https://emojicdn.elk.sh/🐇" alt="토끼" className="slider-icon" />

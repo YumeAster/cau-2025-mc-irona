@@ -7,6 +7,8 @@ import AppSettingPage from './pages/AppSettingPage';
 import LicensePage from './pages/LicensePage';
 import BlacklistPage from './pages/BlacklistPage';
 
+import MiniGameTestPage from './pages/MiniGameTestPage';
+
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
         <Route path="/settings" element={<AppSettingPage />} />
         <Route path="/license" element={<LicensePage />} />
         <Route path="/blacklist" element={<BlacklistPage />} /> 
+
+        <Route path="/game-test" element={<MiniGameTestPage />} />
 
 
       </Routes>

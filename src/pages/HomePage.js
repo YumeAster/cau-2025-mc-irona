@@ -78,68 +78,42 @@ export default function HomePage() {
   };
 
   /* -------------------- location.state 병합 (add / update / delete) -------------------- */
+
   useEffect(() => {
     if (!location.state) return;
+
     setAlarmList((prev) => {
-      // 삭제
+      let next = [...prev];
+
+      // ✅ 삭제 처리
       if (location.state.deleteId) {
-        return prev.filter((a) => a.id !== location.state.deleteId);
+        next = next.filter((a) => a.id !== location.state.deleteId);
       }
-      // 추가 또는 수정
-      if (location.state.alarm) {
-        const idx = prev.findIndex((a) => a.id === location.state.alarm.id);
+
+      // ✅ alarm 또는 alarms를 배열로 처리
+      const incomingAlarms = [];
+
+      if (location.state.alarms && Array.isArray(location.state.alarms)) {
+        incomingAlarms.push(...location.state.alarms);
+      } else if (location.state.alarm) {
+        incomingAlarms.push(location.state.alarm);
+      }
+
+      for (const alarm of incomingAlarms) {
+        const idx = next.findIndex((a) => a.id === alarm.id);
         if (idx !== -1) {
-          const clone = [...prev];
-          clone[idx] = location.state.alarm;
-          return clone;
+          next[idx] = alarm; // 수정
+        } else {
+          next.unshift(alarm); // 추가
         }
-        return [location.state.alarm, ...prev];
       }
-      return prev;
+
+      return next;
     });
 
-    // state 소비 후 초기화
+    // ✅ 상태 소비 후 초기화
     navigate(location.pathname, { replace: true, state: null });
   }, [location, navigate]);
-
-  /* -------------------- 알람 재생 -------------------- */
-
-  useEffect(() => {
-  const interval = setInterval(() => {
-    console.log("⏰ 타이머 작동 중"); // ✅ 콘솔 확인용
-    const now = new Date();
-    const nowStr = now.toTimeString().slice(0, 5); // "HH:MM"
-
-    setAlarmList((prev) =>
-      prev.map((alarm) => {
-        if (!alarm.enabled || alarm.time !== nowStr) return alarm;
-
-        const today = new Date().getDay(); // 0(일) ~ 6(토)
-        const weekdayMatch = alarm.useRepeat || alarm.weekdays.includes(today);
-
-        if (weekdayMatch) {
-          if (alarm.category === "game") {
-            navigate(`/alarm/game/${alarm.id}`, { state: { alarm } });
-          } else {
-            navigate(`/alarm/ring/${alarm.id}`, { state: { alarm } }); // ✅ 알람 객체 직접 전달
-          }
-          
-          if (!alarm.useRepeat) {
-            return { ...alarm, enabled: false };  
-          }
-
-          if (!alarm.useRepeat) {
-            return { ...alarm, enabled: false };
-          }
-        }
-
-        return alarm;
-      })
-    );
-  }, 1000); // 1분마다 체크
-
-  return () => clearInterval(interval);
-}, []);
 
   /* -------------------- 로컬스토리지 동기화 & 구글 드라이브 초기화 -------------------- */
   useEffect(() => {
@@ -177,14 +151,14 @@ useEffect(() => {
       /* ---- 알람 실행 ---- */
       switch (alarm.category) {
         case "quick":
-          alert("quick 알람실행");
+          navigate(`/alarm/ring/${alarm.id}`, { state: { alarm } });
           setAlarmList((prev) => prev.filter((a) => a.id !== alarm.id));
           break;
         case "game":
-          alert("game 알람실행");
+          navigate(`/alarm/game/${alarm.id}`, { state: { alarm } });
           break;
         default:
-          alert("basic 알람실행");
+          navigate(`/alarm/ring/${alarm.id}`, { state: { alarm } });
       }
       firedMapRef.current[alarm.id] = todayStr; // 중복 방지
     });
@@ -192,7 +166,7 @@ useEffect(() => {
 
   // 2) 다음 “분 경계(00초)” 까지 예약 → 이후 1분마다 재귀
   const scheduleNext = () => {
-    const msUntilNextMinute = 60_000 - (Date.now() % 60_000);
+    const msUntilNextMinute = 1_000 - (Date.now() % 1_000);
     timerId = setTimeout(() => {
       runCheck();     // 정확히 00초 즈음 실행
       scheduleNext(); // 다음 분 예약

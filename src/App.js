@@ -8,8 +8,6 @@ import LicensePage from './pages/LicensePage';
 import BlacklistPage from './pages/BlacklistPage';
 import AlarmRingPage from './pages/AlarmRingPage';
 
-import GameAlarmHandler from './pages/GameAlarmHandler';
-
 function App() {
   return (
     <Router>
@@ -23,7 +21,6 @@ function App() {
         <Route path="/license" element={<LicensePage />} />
         <Route path="/blacklist" element={<BlacklistPage />} /> 
 
-        <Route path="/test" element={<GameAlarmHandler />} />
         <Route path="/alarm/ring/:id" element={<AlarmRingPage />} />
         <Route path="/alarm/game/:id" element={<AlarmRingPage />} />
       </Routes>

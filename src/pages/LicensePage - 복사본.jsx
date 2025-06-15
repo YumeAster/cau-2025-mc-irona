@@ -1,29 +1,9 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import ArithmeticGame from "../games/ArithmeticGame.js";      // ← 경로
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const LicensePage = () => {
   const navigate = useNavigate();
-  const [playing, setPlaying] = useState(false);           // 게임 표시 여부
 
-  /* 게임 클리어 → 알람 끄기 → 라이선스 화면 복귀 */
-  const handleGameComplete = () => {
-    if (typeof window.stopAlarm === "function") window.stopAlarm();
-    setPlaying(false);
-  };
-
-  /* 1) 게임 화면 */
-  if (playing) {
-    return (
-      <ArithmeticGame
-        difficulty={3}          // 난이도
-        onComplete={handleGameComplete}
-      />
-    );
-  }
-
-
-  /* 2) 라이선스 화면 */
   const licenseText = `
 MIT License
 
@@ -46,7 +26,7 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,  
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE  
 SOFTWARE.
-`;
+  `;
 
   const usedPackages = [
     'react',
@@ -63,9 +43,8 @@ SOFTWARE.
     '@testing-library/user-event',
   ];
 
-
   return (
-    <div className="p-6 relative">
+    <div className="p-6">
       <button
         className="mb-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
         onClick={() => navigate(-1)}
@@ -73,8 +52,8 @@ SOFTWARE.
         ← 뒤로가기
       </button>
 
-
       <h1 className="text-2xl font-bold mb-4">라이선스 정보</h1>
+
       <section className="mb-6">
         <h2 className="text-xl font-semibold mb-2">사용한 라이선스</h2>
         <pre className="whitespace-pre-wrap bg-gray-100 p-4 rounded text-sm">
@@ -83,23 +62,13 @@ SOFTWARE.
       </section>
 
       <section>
-        <h2 className="text-xl font-semibold mb-2">
-          사용된 주요 오픈소스 라이브러리
-        </h2>
+        <h2 className="text-xl font-semibold mb-2">사용된 주요 오픈소스 라이브러리</h2>
         <ul className="list-disc list-inside text-sm bg-gray-50 p-4 rounded">
-          {usedPackages.map((pkg, idx) => (
-            <li key={idx}>{pkg}</li>
+          {usedPackages.map((pkg, index) => (
+            <li key={index}>{pkg}</li>
           ))}
         </ul>
       </section>
-
-      {/*우측 상단 게임 버튼 */}
-      <button
-        className="absolute top-4 right-4 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded shadow-lg"
-        onClick={() => setPlaying(true)}
-      >
-        🎮 두뇌 풀가동
-      </button>
     </div>
   );
 };

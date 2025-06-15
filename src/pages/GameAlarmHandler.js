@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import TestGame from "../games/TestGame";
-import MultiSwipeGame from "../games/MultiSwipeGame.js";
+import SlipAwayGame from "../games/SlipAwayGame.js";
 
-const GAMES = [MultiSwipeGame]; // 사용할 게임들 목록
+const GAMES = [SlipAwayGame]; // 사용할 게임들 목록
 const GameDifficulty = 2; // 난이도는 상수 or 추후 동적으로 설정 가능
 
 export default function GameAlarmHandler() {

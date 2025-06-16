@@ -8,6 +8,8 @@ import LicensePage from './pages/LicensePage';
 import BlacklistPage from './pages/BlacklistPage';
 import AlarmRingPage from './pages/AlarmRingPage';
 import GameAlarmHandler from './pages/GameAlarmHandler';
+import GameDemoPage from './pages/GameDemoPage';
+import GamePlayPage from './pages/GamePlayPage';
 
 function App() {
   return (
@@ -15,6 +17,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Splash />} />
         <Route path="/HomePage" element={<HomePage />} />
+        <Route path="/demo" element={<GameDemoPage />} />
+        <Route path="/play" element={<GamePlayPage />} />
         <Route path="/alarm" element={<AlarmSettingPage />} />
         <Route path="/alarm/new" element={<AlarmSettingPage isNew />} />
         <Route path="/alarm/:id" element={<AlarmSettingPage />} />

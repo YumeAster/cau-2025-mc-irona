@@ -14,11 +14,22 @@ import TapGame from "../games/TapGame";
 import TypingPracticeGame from "../games/TypingPracticeGame";
 import WeatherGuessGame from "../games/WeatherGuessGame";
 
-// const GAMES = [ArithmeticGame, ColorPickGame, ColorSequenceGame, FakeAlarm, MemoryGame,
-//   MultiSwipeGame, NestedGame, NumberSequenceGame, SentenceGame, SlipAwayGame, TapGame, TypingPracticeGame, WeatherGuessGame
-// ]; // 사용할 게임들 목록
+const GAMES = [
+  ArithmeticGame, 
+  ColorPickGame,
+  ColorSequenceGame, 
+  FakeAlarm, 
+  MemoryGame,
+  MultiSwipeGame, 
+  NestedGame, 
+  NumberSequenceGame, 
+  SentenceGame, 
+  SlipAwayGame, 
+  TapGame, 
+  TypingPracticeGame, 
+  WeatherGuessGame
+]; // 사용할 게임들 목록
 
-const GAMES = [FakeAlarm]; // 사용할 게임들 목록
 const GameDifficulty = 1;// 난이도는 상수 or 추후 동적으로 설정 가능
 
 export default function GameAlarmHandler() {

@@ -7,6 +7,7 @@ import AppSettingPage from './pages/AppSettingPage';
 import LicensePage from './pages/LicensePage';
 import BlacklistPage from './pages/BlacklistPage';
 import AlarmRingPage from './pages/AlarmRingPage';
+import GameAlarmHandler from './pages/GameAlarmHandler';
 
 
 function App() {
@@ -24,7 +25,7 @@ function App() {
 
 
         <Route path="/alarm/ring/:id" element={<AlarmRingPage />} />
-        <Route path="/alarm/game/:id" element={<AlarmRingPage />} />
+        <Route path="/alarm/game/:id" element={<GameAlarmHandler />} />
       </Routes>
     </Router>
   );

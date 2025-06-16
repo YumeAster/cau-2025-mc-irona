@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-export default function AlarmRingPage() {
+export default function FakeAlarm({ difficulty, onComplete }) {
   const navigate = useNavigate();
   const location = useLocation();
   const alarm = location.state?.alarm;
@@ -58,9 +58,31 @@ export default function AlarmRingPage() {
     navigate("/HomePage", { state: { alarms: [alarm, alarmData] } });
   };
 
+  const fakeTime = () => {
+    const alarmNum = alarm.time.split(":");
+    let alarmHour = parseInt(alarmNum[0]);
+    let alarmMinute = parseInt(alarmNum[1]);
+    const randomFakeTime = (Math.floor(Math.random() * 13) - 6) * 10;
+
+    alarmMinute += randomFakeTime;
+
+    if(alarmMinute >= 60) {
+      alarmHour += Math.floor(alarmMinute / 60)
+      alarmMinute %= 60;
+    } else if(alarmMinute < 0) {
+      alarmHour -= Math.floor(alarmMinute / 60);
+      alarmMinute += 6000;
+      alarmMinute %= 60;
+    }
+
+    alarmHour = alarmHour.toString().padStart(2, '0');
+    alarmMinute = alarmMinute.toString().padStart(2, '0');
+
+    return `${alarmHour}:${alarmMinute}`;
+  }
+
   const handleDismiss = () => {
-    alarm.enabled = false;
-    navigate("/HomePage", { state: { alarm: alarm } });
+    onComplete();
   };
 
   const handleMouseDown = (e) => {
@@ -95,7 +117,7 @@ export default function AlarmRingPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-between text-center px-6 py-10 bg-gradient-to-b from-blue-100 to-pink-100">
       {/* 상단 시간 */}
-      <div className="text-4xl font-bold text-gray-800 mt-4">{alarm.time}</div>
+      <div className="text-4xl font-bold text-gray-800 mt-4">{fakeTime()}</div>
 
       {/* 알람 제목 */}
       <div className="mt-2">
@@ -132,21 +154,19 @@ export default function AlarmRingPage() {
       {/* 하단 snooze 옵션 (세로 정렬) */}
       <div className="flex flex-col items-center text-gray-800 text-sm px-4 gap-4">
         <button
-          onClick={handleSnooze}
           className="text-base font-semibold text-gray-700"
         >
           싫어
         </button>
         <div className="flex items-center gap-4">
           <button
-            onClick={() => setSnoozeMin(Math.max(1, snoozeMin - 1))}
+
             className="w-10 h-10 flex items-center justify-center border border-gray-400 rounded-full text-lg font-bold"
           >
             -
           </button>
           <span className="text-base font-semibold">{snoozeMin}분만</span>
           <button
-            onClick={() => setSnoozeMin(snoozeMin + 1)}
             className="w-10 h-10 flex items-center justify-center border border-gray-400 rounded-full text-lg font-bold"
           >
             +

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 const sentence = "동해물과 백두산이 마르고 닳도록 하느님이 보우하사 우리나라 만세";
 const words = sentence.split(" ");
@@ -12,7 +12,7 @@ function shuffle(array) {
   return arr;
 }
 
-export default function SentenceGame() {
+export default function SentenceGame({ difficulty = 1, onComplete }) {
   const [shuffled, setShuffled] = useState(shuffle(words));
   const [selected, setSelected] = useState([]);
   const [status, setStatus] = useState("playing"); // playing, correct, wrong
@@ -41,6 +41,13 @@ export default function SentenceGame() {
     }
   }
 
+  // 정답 도달 시 onComplete 호출
+  useEffect(() => {
+    if (status === "correct") {
+      onComplete?.();
+    }
+  }, [status, onComplete]);
+
   return (
     <div style={{ textAlign: "center", padding: 20 }}>
       <div style={{ fontWeight: "bold", marginBottom: 10 }}>
@@ -68,7 +75,6 @@ export default function SentenceGame() {
           </button>
         ))}
       </div>
-      {/* 입력(선택)칸: 더 진한 음영 및 박스 그림자 */}
       <div style={{
         minHeight: 40,
         marginBottom: 10,

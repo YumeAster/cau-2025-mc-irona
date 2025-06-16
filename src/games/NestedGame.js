@@ -1,31 +1,28 @@
 import React, { useState, useEffect, useRef } from "react";
 
 export default function NestedGame({ difficulty = 1, onComplete }) {
-  const INITIAL_DELAY = 7000; // 첫 알람 대기 시간 (7초)
-  const ALARM_INTERVAL = [4000, 3000, 2000][difficulty]; // 이후 주기
+  const ALARM_INTERVAL = [7000, 4000, 3000][difficulty];
   const MAX_ALARMS = [3, 5, 7][difficulty];
 
   const [alarms, setAlarms] = useState([]);
-  const [timeLeft, setTimeLeft] = useState(INITIAL_DELAY / 1000);
-  const [gameState, setGameState] = useState("waiting");
+  const [timeLeft, setTimeLeft] = useState(ALARM_INTERVAL / 1000);
+  const [gameState, setGameState] = useState("waiting"); // waiting, playing, success
   const alarmId = useRef(1);
   const audioRefs = useRef({});
 
-  // 진입 시 자동 시작
+  // mount 시 자동 시작
   useEffect(() => {
     handleStart();
   }, []);
 
-  // 타이머: 시간 감소
+  // 타이머 (알람 추가용)
   useEffect(() => {
     if (gameState !== "playing") return;
     if (alarms.length >= MAX_ALARMS) return;
     if (timeLeft <= 0) return;
-
     const timer = setInterval(() => {
       setTimeLeft(prev => prev - 1);
     }, 1000);
-
     return () => clearInterval(timer);
   }, [timeLeft, gameState, alarms.length]);
 
@@ -33,14 +30,13 @@ export default function NestedGame({ difficulty = 1, onComplete }) {
   useEffect(() => {
     if (gameState !== "playing") return;
     if (alarms.length >= MAX_ALARMS) return;
-
     if (timeLeft <= 0) {
       addAlarm();
-      setTimeLeft(ALARM_INTERVAL / 1000); // 이후는 고정 주기
+      setTimeLeft(ALARM_INTERVAL / 1000);
     }
   }, [timeLeft, alarms.length, gameState]);
 
-  // 성공/대기 시 오디오 정지
+  // 게임 상태에 따라 오디오 멈춤
   useEffect(() => {
     if (gameState === "success" || gameState === "waiting") {
       stopAllAudios();
@@ -54,30 +50,33 @@ export default function NestedGame({ difficulty = 1, onComplete }) {
   const addAlarm = () => {
     const newId = alarmId.current++;
     setAlarms(prev => [...prev, { id: newId }]);
-
     setTimeout(() => {
-      const audio = audioRefs.current[newId];
-      if (audio) {
-        audio.currentTime = 0;
-        audio.play();
+      if (audioRefs.current[newId]) {
+        audioRefs.current[newId].currentTime = 0;
+        audioRefs.current[newId].play();
       }
-    }, 0); // 즉시 재생
+    }, 200);
   };
 
   const handleStart = () => {
     alarmId.current = 1;
     setAlarms([{ id: 1 }]);
-    setTimeLeft(INITIAL_DELAY / 1000);
+    setTimeLeft(ALARM_INTERVAL / 1000);
     setGameState("playing");
-
-    // 첫 알람도 즉시 울림
     setTimeout(() => {
-      const audio = audioRefs.current[1];
-      if (audio) {
-        audio.currentTime = 0;
-        audio.play();
+      if (audioRefs.current[1]) {
+        audioRefs.current[1].currentTime = 0;
+        audioRefs.current[1].play();
       }
-    }, 0);
+    }, 200);
+  };
+
+  const handleRestart = () => {
+    stopAllAudios();
+    setAlarms([]);
+    setTimeLeft(ALARM_INTERVAL / 1000);
+    setGameState("waiting");
+    alarmId.current = 1;
   };
 
   const stopAllAudios = () => {
@@ -93,46 +92,35 @@ export default function NestedGame({ difficulty = 1, onComplete }) {
     if (alarms.length === 0) return;
     const lastIndex = alarms.length - 1;
     if (alarms[lastIndex].id !== id) return;
-
     setGameState("success");
     stopAllAudios();
-    if (onComplete) onComplete();
+    onComplete?.(); // 콜백 호출
   };
 
   return (
     <div style={{ textAlign: "center", marginTop: "2rem" }}>
-      <p>
-        *게임설명*<br />
-        첫 알람은 7초, 이후는 난이도에 따라 주기적으로 중첩됩니다.<br />
-        각각의 알람은 해제할 때까지 계속됩니다.<br />
-        <b>(가장 최근 알람만 해제할 수 있습니다.)</b><br /><br />
-      </p>
-
       {gameState === "playing" && (
         <div>
-          <div style={{ marginBottom: "1rem" }}>
-            <b>남은 시간(다음 알람 추가까지): </b>
-            <span style={{ fontSize: "1.3rem", color: "#d7263d" }}>{timeLeft}s</span>
-          </div>
+    {alarms.length < MAX_ALARMS && (
+      <div style={{ marginBottom: "1rem" }}>
+        <b>남은 시간(다음 알람 추가까지): </b>
+        <span style={{ fontSize: "1.3rem", color: "#d7263d" }}>{timeLeft}s</span>
+      </div>
+    )}
           <AlarmList
             alarms={alarms}
             handleClearAlarm={handleClearAlarm}
             audioRefs={audioRefs}
-            soundSrc="/alarm.mp3"
+            soundSrc="/alarmTest.mp3"
             gameState={gameState}
           />
-        </div>
-      )}
-
-      {gameState === "success" && (
-        <div style={{ color: "green", fontWeight: "bold", fontSize: "1.5rem" }}>
-          성공! 알람을 해제했습니다 🎉
         </div>
       )}
     </div>
   );
 }
 
+// 알람 리스트 컴포넌트
 function AlarmList({ alarms, handleClearAlarm, audioRefs, soundSrc, gameState }) {
   return (
     <div style={{

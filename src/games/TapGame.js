@@ -1,26 +1,43 @@
-// src/games/TapGame.js
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 
-const TIME_LIMIT = 5;      // 제한 시간 (초)
-const TARGET_COUNT = 30;   // 목표 클릭 횟수
+const TapGame = ({ difficulty = 1, onComplete, onCnt }) => {
+  const TIME_LIMIT = useMemo(() => [3, 5, 7][difficulty], [difficulty]);
+  const TARGET_COUNT = useMemo(() => [15, 30, 60][difficulty], [difficulty]);
 
-const TapGame = ({ onResult }) => {
   const [count, setCount] = useState(0);
+  const countRef = useRef(0);
   const [timeLeft, setTimeLeft] = useState(TIME_LIMIT);
-  const [gameState, setGameState] = useState("ready"); // ready, playing, success, fail
+  const [gameState, setGameState] = useState("ready");
   const timerRef = useRef(null);
 
-  // 게임 시작
+  // 게임 자동 시작 (최초 mount 한 번만 실행)
+  useEffect(() => {
+    startGame();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const startGame = () => {
+    clearInterval(timerRef.current);
     setCount(0);
+    countRef.current = 0;
     setTimeLeft(TIME_LIMIT);
     setGameState("playing");
+
     timerRef.current = setInterval(() => {
       setTimeLeft(prev => {
         if (prev <= 1) {
           clearInterval(timerRef.current);
-          setGameState(count + 1 >= TARGET_COUNT ? "success" : "fail");
-          if (onResult) onResult(count + 1 >= TARGET_COUNT);
+          const didSucceed = countRef.current >= TARGET_COUNT;
+          setGameState(didSucceed ? "success" : "fail");
+
+          if (didSucceed && onComplete) onComplete();
+
+          if (!didSucceed) {
+            setTimeout(() => {
+              resetGame();
+            }, 1500);
+          }
+
           return 0;
         }
         return prev - 1;
@@ -28,32 +45,42 @@ const TapGame = ({ onResult }) => {
     }, 1000);
   };
 
-  // 버튼 클릭
   const handleTap = () => {
     if (gameState !== "playing") return;
     setCount(prev => {
       const newCount = prev + 1;
+      countRef.current = newCount;
+      if (onCnt) onCnt(newCount);
+
       if (newCount >= TARGET_COUNT) {
         clearInterval(timerRef.current);
         setGameState("success");
-        if (onResult) onResult(true);
+        if (onComplete) onComplete();
       }
+
       return newCount;
     });
   };
 
-  // 다시 시작
   const resetGame = () => {
     clearInterval(timerRef.current);
     setCount(0);
+    countRef.current = 0;
     setTimeLeft(TIME_LIMIT);
     setGameState("ready");
+
+    // 자동으로 다시 시작
+    setTimeout(() => {
+      startGame();
+    }, 100);
   };
 
-  // UI
   return (
     <div style={{ textAlign: "center", marginTop: "2rem" }}>
-      <p>제한 시간: {TIME_LIMIT}초<br/>목표: {TARGET_COUNT}번 클릭</p>
+      <p>
+        제한 시간: {TIME_LIMIT}초<br />
+        목표: {TARGET_COUNT}번 클릭
+      </p>
       <div style={{ fontSize: "2rem", margin: "1rem" }}>
         남은 시간: {timeLeft}s
       </div>
@@ -61,37 +88,34 @@ const TapGame = ({ onResult }) => {
         클릭 수: {count}
       </div>
 
-      {gameState === "ready" && (
+      {gameState === "playing" && (
         <button
-          onClick={startGame}
+          onClick={handleTap}
           style={{
-            fontSize: "1.5rem",
-            padding: "1rem",
-            border: "2px solid #333",       // 테두리 추가
-            borderRadius: "0.5rem",          // 둥근 모서리(optional)
-            background: "#fff",              // 배경색 명시(optional)
-            cursor: "pointer"
+            fontSize: "2rem",
+            padding: "2rem",
+            background: "#f7b731",
+            borderRadius: "1rem",
+            border: "none"
           }}
         >
-          시작
-        </button>
-      )}
-
-      {gameState === "playing" && (
-        <button onClick={handleTap} style={{ fontSize: "2rem", padding: "2rem", background: "#f7b731", borderRadius: "1rem", border: "none" }}>
           연타!
         </button>
       )}
+
       {gameState === "success" && (
         <div>
           <div style={{ color: "green", fontWeight: "bold", fontSize: "1.5rem" }}>성공!</div>
-          <button onClick={resetGame}>다시하기</button>
+          <button onClick={startGame}>다시하기</button>
         </div>
       )}
+
       {gameState === "fail" && (
         <div>
           <div style={{ color: "red", fontWeight: "bold", fontSize: "1.5rem" }}>실패!</div>
-          <button onClick={resetGame}>다시하기</button>
+          <div style={{ fontSize: "0.9rem", color: "#666", marginTop: "0.5rem" }}>
+            잠시 후 자동으로 다시 시작됩니다...
+          </div>
         </div>
       )}
     </div>

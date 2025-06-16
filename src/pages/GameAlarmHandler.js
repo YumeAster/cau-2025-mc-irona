@@ -19,8 +19,8 @@ import WeatherGuessGame from "../games/WeatherGuessGame";
 //   MultiSwipeGame, NestedGame, NumberSequence, SentenceGame, SlipAwayGame, TapGame, TypingPracticeGame, WeatherGuessGame
 // ]; // 사용할 게임들 목록
 
-const GAMES = [NestedGame]; // 사용할 게임들 목록
-const GameDifficulty = 0; // 난이도는 상수 or 추후 동적으로 설정 가능
+const GAMES = [TapGame]; // 사용할 게임들 목록
+const GameDifficulty = 2; // 난이도는 상수 or 추후 동적으로 설정 가능
 
 
 export default function GameAlarmHandler() {

@@ -43,7 +43,8 @@ export default function GamePlayPage() {
 
   const qs        = new URLSearchParams(location.search);
   const gameKey   = qs.get("game");
-  const level     = Number(qs.get("difficulty")) || 1;
+  const raw = qs.get("difficulty");
+  const level = raw !== null ? Number(raw) : 1;
 
   const SelectedGame = useMemo(() => GAME_MAP[gameKey], [gameKey]);
 

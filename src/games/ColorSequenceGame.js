@@ -8,8 +8,8 @@ export function startGame(difficulty = 1, onComplete = () => {}) {
 /* ====== 내부 컴포넌트 ====== */
 export default function ColorSequenceGame({ difficulty = 1, onComplete }) {
   /* 난이도별 설정 */
-  const gridSize = [5, 6, 7][difficulty - 1] ?? 5;
-  const seqLen   = [3, 5, 7][difficulty - 1] ?? 5;
+  const gridSize = [4, 5, 6][difficulty] ?? 5;
+  const seqLen   = [3, 5, 7][difficulty] ?? 5;
 
   const totalTiles = gridSize * gridSize;
 

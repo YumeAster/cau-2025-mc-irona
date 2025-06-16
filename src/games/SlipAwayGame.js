@@ -8,9 +8,8 @@ export default function SlipAwayGame({ difficulty = 1, onComplete }) {
   const [startTouch, setStartTouch] = useState(null);
   const [touchPath, setTouchPath] = useState([]);
 
-  difficulty = 2
-  const interval = [600, 300, 300][difficulty];
-  const distanceScale = [0.75, 1, 2][difficulty]
+  const interval = [500, 400, 300][difficulty];
+  const distanceScale = [0.75, 1, 1.5][difficulty]
 
   useEffect(() => {
     const moveInterval = setInterval(() => {

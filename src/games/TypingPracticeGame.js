@@ -11,13 +11,13 @@ export function startGame(difficulty = 1, onComplete = () => {}) {
 export default function TypingPracticeGame({ difficulty = 1, onComplete }) {
   /* 난이도별 ‘단어 세트 풀(pool)’ */
   const wordPool = {
-    1: [
+    0: [
       ["red", "green", "blue"],
       ["black", "white", "yellow"],
       ["orange", "purple", "pink"],
       ["sun", "moon", "star"],
     ],
-    2: [
+    1: [
       ["computer", "science", "react", "javascript"],
       ["internet", "database", "frontend", "backend"],
       ["variable", "function", "component", "context"],
@@ -31,7 +31,7 @@ export default function TypingPracticeGame({ difficulty = 1, onComplete }) {
 
   /* ───── 목표 문장 생성 ───── */
   useEffect(() => {
-    if (difficulty === 3) {
+    if (difficulty === 2) {
       /* 무작위 알파벳 20자 */
       const letters = "abcdefghijklmnopqrstuvwxyz";
       let str = "";

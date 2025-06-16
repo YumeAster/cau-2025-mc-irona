@@ -6,9 +6,8 @@ import AlarmSettingPage from './pages/AlarmSettingPage';
 import AppSettingPage from './pages/AppSettingPage'; 
 import LicensePage from './pages/LicensePage';
 import BlacklistPage from './pages/BlacklistPage';
-
-import MiniGameTestPage from './pages/MiniGameTestPage';
-
+import AlarmRingPage from './pages/AlarmRingPage';
+import GameAlarmHandler from './pages/GameAlarmHandler';
 
 function App() {
   return (
@@ -23,9 +22,14 @@ function App() {
         <Route path="/license" element={<LicensePage />} />
         <Route path="/blacklist" element={<BlacklistPage />} /> 
 
+<<<<<<< HEAD
         <Route path="/game-test" element={<MiniGameTestPage />} />
 
 
+=======
+        <Route path="/alarm/ring/:id" element={<AlarmRingPage />} />
+        <Route path="/alarm/game/:id" element={<GameAlarmHandler />} />
+>>>>>>> gisu-games
       </Routes>
     </Router>
   );

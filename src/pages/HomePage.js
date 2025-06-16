@@ -4,6 +4,15 @@
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { FiMoreVertical, FiPlus } from "react-icons/fi";
+import { SiGoogledrive } from "react-icons/si";
+import dayjs from "dayjs";
+
+import {
+  initGoogleAPI,
+  getStoredGoogleUser,
+  saveToDrive,
+  loadFromDrive,
+} from "../utils/googleDrive";
 
 /* ------------------------------------------------------------------
  * 디자인용 아이콘 (이모지)
@@ -53,36 +62,123 @@ export default function HomePage() {
   const persisted = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
   const [alarmList, setAlarmList] = useState(persisted ?? []);
 
+  /* -------------------- 구글 드라이브 -------------------- */
+  const isLoggedIn = getStoredGoogleUser();
+
+  const handleManualSave = async () => {
+    await saveToDrive(alarmList);
+  };
+
+  const handleManualLoad = async () => {
+    const data = await loadFromDrive();
+    if (data) {
+      setAlarmList(data);
+      alert("Drive에서 불러왔습니다!");
+    }
+  };
+
   /* -------------------- location.state 병합 (add / update / delete) -------------------- */
+
   useEffect(() => {
     if (!location.state) return;
 
     setAlarmList((prev) => {
-      // 삭제
+      let next = [...prev];
+
+      // ✅ 삭제 처리
       if (location.state.deleteId) {
-        return prev.filter((a) => a.id !== location.state.deleteId);
+        next = next.filter((a) => a.id !== location.state.deleteId);
       }
-      // 추가 또는 수정
-      if (location.state.alarm) {
-        const idx = prev.findIndex((a) => a.id === location.state.alarm.id);
+
+      // ✅ alarm 또는 alarms를 배열로 처리
+      const incomingAlarms = [];
+
+      if (location.state.alarms && Array.isArray(location.state.alarms)) {
+        incomingAlarms.push(...location.state.alarms);
+      } else if (location.state.alarm) {
+        incomingAlarms.push(location.state.alarm);
+      }
+
+      for (const alarm of incomingAlarms) {
+        const idx = next.findIndex((a) => a.id === alarm.id);
         if (idx !== -1) {
-          const clone = [...prev];
-          clone[idx] = location.state.alarm;
-          return clone;
+          next[idx] = alarm; // 수정
+        } else {
+          next.unshift(alarm); // 추가
         }
-        return [location.state.alarm, ...prev];
       }
-      return prev;
+
+      return next;
     });
 
-    // state 소비 후 초기화
+    // ✅ 상태 소비 후 초기화
     navigate(location.pathname, { replace: true, state: null });
   }, [location, navigate]);
 
-  /* -------------------- 로컬스토리지 동기화 -------------------- */
+  /* -------------------- 로컬스토리지 동기화 & 구글 드라이브 초기화 -------------------- */
+  useEffect(() => {
+    initGoogleAPI().then(() => {
+      console.log("✅ Google API ready");
+    });
+  }, []);
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(alarmList));
   }, [alarmList]);
+
+  /* ------------------------------------------------------------------
+      정해진 시간에 알람 실행
+   * ----------------------------------------------------------------*/
+const firedMapRef = useRef({}); // { alarmId: "YYYY-MM-DD" }
+
+useEffect(() => {
+  let timerId;
+
+  // 1) 알람 조건 검사 함수
+  const runCheck = () => {
+    const now          = dayjs();
+    const hhmm         = now.format("HH:mm");
+    const todayWday    = now.day();           // 0=Sun … 6=Sat
+    const todayStr     = now.format("YYYY-MM-DD");
+
+    alarmList.forEach((alarm) => {
+      if (!alarm.enabled) return;
+      if (firedMapRef.current[alarm.id] === todayStr) return;   // 이미 울렸음
+      if (alarm.time !== hhmm)          return;                 // 시간 불일치
+      if (Array.isArray(alarm.weekdays) &&
+          alarm.weekdays.length > 0 &&
+          !alarm.weekdays.includes(todayWday)) return;          // 요일 불일치
+
+      /* ---- 알람 실행 ---- */
+      switch (alarm.category) {
+        case "quick":
+          navigate(`/alarm/ring/${alarm.id}`, { state: { alarm } });
+          setAlarmList((prev) => prev.filter((a) => a.id !== alarm.id));
+          break;
+        case "game":
+          navigate(`/alarm/game/${alarm.id}`, { state: { alarm } });
+          break;
+        default:
+          navigate(`/alarm/ring/${alarm.id}`, { state: { alarm } });
+      }
+      firedMapRef.current[alarm.id] = todayStr; // 중복 방지
+    });
+  };
+
+  // 2) 다음 “분 경계(00초)” 까지 예약 → 이후 1분마다 재귀
+  const scheduleNext = () => {
+    const msUntilNextMinute = 1_000 - (Date.now() % 1_000);
+    timerId = setTimeout(() => {
+      runCheck();     // 정확히 00초 즈음 실행
+      scheduleNext(); // 다음 분 예약
+    }, msUntilNextMinute);
+  };
+
+  scheduleNext();     // 첫 예약
+
+  return () => clearTimeout(timerId); // 언마운트/알람목록 변경 시 정리
+}, [alarmList]);
+
+
 
   /* -------------------- 토글 -------------------- */
   const handleToggle = useCallback((id) => {
@@ -101,7 +197,7 @@ export default function HomePage() {
   /* -------------------- + 버튼 (길게/짧게) -------------------- */
   const pressTimerRef = useRef(null);
   const [showQuickModal, setShowQuickModal] = useState(false);
-  const [quickTime, setQuickTime] = useState("06:00");
+  const [quickTime, setQuickTime] = useState("00:00");
 
   const onPlusDown = () => {
     pressTimerRef.current = setTimeout(() => setShowQuickModal(true), 600);
@@ -173,9 +269,29 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* 헤더 */}
-      <header className="bg-white px-6 pt-12 pb-4 shadow">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-gray-900">알람 목록 화면</h1>
+          <header className="bg-white px-6 pt-12 pb-4 shadow">
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-900">알람 목록 화면</h1>
+        <div className="flex items-center gap-2">
+          {isLoggedIn ? (
+            <>
+              <SiGoogledrive size={22} color="#4285F4" />
+
+              {/* ✅ 수동 저장/불러오기 버튼 */}
+              <button
+                onClick={handleManualLoad}
+                className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm"
+              >
+                불러오기
+              </button>
+              <button
+                onClick={handleManualSave}
+                className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm"
+              >
+                저장하기
+              </button>
+            </>
+          ) : (<></>)}
           <button
             onClick={goSettings}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -185,7 +301,8 @@ export default function HomePage() {
             <FiMoreVertical size={22} />
           </button>
         </div>
-      </header>
+      </div>
+    </header>
 
       {/* 알람 리스트 */}
       <main className="px-4 py-2">

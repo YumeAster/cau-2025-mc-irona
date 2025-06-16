@@ -21,10 +21,10 @@ export default function ArithmeticGame({ difficulty = 1, onComplete }) {
 
     let nums = [];
     let ops  = [];
-    if (difficulty === 1) {
+    if (difficulty === 0) {
       nums = [rand(1, 9), rand(1, 9)];
       ops  = [ops1[rand(0, 1)]];
-    } else if (difficulty === 2) {
+    } else if (difficulty === 1) {
       nums = [rand(10, 99), rand(10, 99)];
       ops  = [ops2[rand(0, 2)]];
     } else {

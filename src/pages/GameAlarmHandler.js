@@ -8,20 +8,18 @@ import FakeAlarm from "../games/FakeAlarm";
 import MemoryGame from "../games/MemoryGame";
 import MultiSwipeGame from "../games/MultiSwipeGame";
 import NestedGame from "../games/NestedGame";
-import NumberSequence from "../games/NumberSequence";
 import SentenceGame from "../games/SentenceGame";
 import SlipAwayGame from "../games/SlipAwayGame";
 import TapGame from "../games/TapGame";
 import TypingPracticeGame from "../games/TypingPracticeGame";
 import WeatherGuessGame from "../games/WeatherGuessGame";
 
-// const GAMES = [NumberSequenceGame, ArithmeticGame, ColorPickGame, ColorSequenceGame, FakeAlarm, MemoryGame,
-//   MultiSwipeGame, NestedGame, NumberSequence, SentenceGame, SlipAwayGame, TapGame, TypingPracticeGame, WeatherGuessGame
+// const GAMES = [ArithmeticGame, ColorPickGame, ColorSequenceGame, FakeAlarm, MemoryGame,
+//   MultiSwipeGame, NestedGame, NumberSequenceGame, SentenceGame, SlipAwayGame, TapGame, TypingPracticeGame, WeatherGuessGame
 // ]; // 사용할 게임들 목록
 
-const GAMES = [NestedGame]; // 사용할 게임들 목록
-const GameDifficulty = 0; // 난이도는 상수 or 추후 동적으로 설정 가능
-
+const GAMES = [FakeAlarm]; // 사용할 게임들 목록
+const GameDifficulty = 1;// 난이도는 상수 or 추후 동적으로 설정 가능
 
 export default function GameAlarmHandler() {
   const { id } = useParams();

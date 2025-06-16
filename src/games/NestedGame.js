@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 
-const MAX_ALARMS = 5;       
-const ALARM_INTERVAL = 5000; // 5초(ms)
+export default function NestedGame({ difficulty = 1, onComplete }) {
+  const ALARM_INTERVAL = [7000, 4000, 3000][difficulty];   // 5초(ms)
+  const MAX_ALARMS = [3, 5, 7][difficulty];
 
-export default function NestedAlarmGameTest() {
   const [alarms, setAlarms] = useState([]);
   const [timeLeft, setTimeLeft] = useState(ALARM_INTERVAL / 1000);
   const [gameState, setGameState] = useState("waiting"); // waiting, playing, success
@@ -96,7 +96,6 @@ export default function NestedAlarmGameTest() {
     setGameState("success"); // 즉시 성공 처리
     stopAllAudios();
   };
-
   return (
     <div style={{ textAlign: "center", marginTop: "2rem" }}>
       <p>

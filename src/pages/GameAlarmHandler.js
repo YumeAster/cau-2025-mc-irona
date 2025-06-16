@@ -1,10 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import NumberSequenceGame from "../games/NumberSequence";
+import ArithmeticGame from "../games/ArithmeticGame";
+import ColorPickGame from "../games/ColorPickGame";
+import ColorSequenceGame from "../games/ColorSequenceGame";
 import FakeAlarm from "../games/FakeAlarm";
 import MemoryGame from "../games/MemoryGame";
+import MultiSwipeGame from "../games/MultiSwipeGame";
+import NestedGame from "../games/NestedGame";
+import NumberSequence from "../games/NumberSequence";
+import SentenceGame from "../games/SentenceGame";
+import SlipAwayGame from "../games/SlipAwayGame";
+import TapGame from "../games/TapGame";
+import TypingPracticeGame from "../games/TypingPracticeGame";
+import WeatherGuessGame from "../games/WeatherGuessGame";
 
-const GAMES = [NumberSequenceGame, FakeAlarm, MemoryGame]; // 사용할 게임들 목록
+// const GAMES = [NumberSequenceGame, ArithmeticGame, ColorPickGame, ColorSequenceGame, FakeAlarm, MemoryGame,
+//   MultiSwipeGame, NestedGame, NumberSequence, SentenceGame, SlipAwayGame, TapGame, TypingPracticeGame, WeatherGuessGame
+// ]; // 사용할 게임들 목록
+
+const GAMES = [NestedGame]; // 사용할 게임들 목록
 const GameDifficulty = 0; // 난이도는 상수 or 추후 동적으로 설정 가능
 
 

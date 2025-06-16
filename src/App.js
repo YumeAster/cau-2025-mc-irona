@@ -22,14 +22,9 @@ function App() {
         <Route path="/license" element={<LicensePage />} />
         <Route path="/blacklist" element={<BlacklistPage />} /> 
 
-<<<<<<< HEAD
-        <Route path="/game-test" element={<MiniGameTestPage />} />
-
-
-=======
         <Route path="/alarm/ring/:id" element={<AlarmRingPage />} />
         <Route path="/alarm/game/:id" element={<GameAlarmHandler />} />
->>>>>>> gisu-games
+        <Route path="/alarm/test" element={<GameAlarmHandler />} />
       </Routes>
     </Router>
   );

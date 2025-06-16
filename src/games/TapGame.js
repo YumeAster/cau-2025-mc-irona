@@ -1,10 +1,10 @@
-// src/games/TapGameTest.js
+// src/games/TapGame.js
 import React, { useState, useRef } from "react";
 
 const TIME_LIMIT = 5;      // 제한 시간 (초)
 const TARGET_COUNT = 30;   // 목표 클릭 횟수
 
-const TapGameTest = ({ onResult }) => {
+const TapGame = ({ onResult }) => {
   const [count, setCount] = useState(0);
   const [timeLeft, setTimeLeft] = useState(TIME_LIMIT);
   const [gameState, setGameState] = useState("ready"); // ready, playing, success, fail
@@ -98,4 +98,4 @@ const TapGameTest = ({ onResult }) => {
   );
 };
 
-export default TapGameTest;
+export default TapGame;

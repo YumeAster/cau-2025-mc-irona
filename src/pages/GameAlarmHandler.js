@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import TestGame from "../games/TestGame";
+import NumberSequenceGame from "../games/NumberSequence";
+import FakeAlarm from "../games/FakeAlarm";
+import MemoryGame from "../games/MemoryGame";
 
-const GAMES = [TestGame]; // 사용할 게임들 목록
-const GameDifficulty = 2; // 난이도는 상수 or 추후 동적으로 설정 가능
+const GAMES = [NumberSequenceGame, FakeAlarm, MemoryGame]; // 사용할 게임들 목록
+const GameDifficulty = 0; // 난이도는 상수 or 추후 동적으로 설정 가능
+
 
 export default function GameAlarmHandler() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const [SelectedGame, setSelectedGame] = useState(null);
+  const alarm = location.state?.alarm;
 
   useEffect(() => {
     // 게임 랜덤 선택
@@ -18,8 +22,8 @@ export default function GameAlarmHandler() {
   }, []);
 
   const handleComplete = () => {
-    // 게임 종료 후 홈으로 이동
-    navigate("/");
+    alarm.enabled = false;
+    navigate("/HomePage", { state: { alarm: alarm } });
   };
 
   if (!SelectedGame) return <div>게임을 불러오는 중...</div>;

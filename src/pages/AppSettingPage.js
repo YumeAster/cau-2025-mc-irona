@@ -79,6 +79,7 @@ export default function AppSettingPage() {
         <button className="block-button" onClick={() => alert("분석 시각화로 이동")}>분석 시각화</button>
         <button className="block-button" onClick={() => alert("의견 보내기")}>의견 보내기</button>
         <button className="block-button" onClick={() => navigate('/license')}>라이센스</button>
+        <button className="block-button" onClick={() => navigate('/demo')}>게임 목록 (시연용)</button>
 
       </div>
     </div>

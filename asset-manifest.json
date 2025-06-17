@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/cau-2025-mc-irona/public/static/css/main.8f9edbd0.css",
-    "main.js": "/cau-2025-mc-irona/public/static/js/main.986ed837.js",
-    "static/js/453.1cd3c6bd.chunk.js": "/cau-2025-mc-irona/public/static/js/453.1cd3c6bd.chunk.js",
-    "index.html": "/cau-2025-mc-irona/public/index.html",
-    "main.8f9edbd0.css.map": "/cau-2025-mc-irona/public/static/css/main.8f9edbd0.css.map",
-    "main.986ed837.js.map": "/cau-2025-mc-irona/public/static/js/main.986ed837.js.map",
-    "453.1cd3c6bd.chunk.js.map": "/cau-2025-mc-irona/public/static/js/453.1cd3c6bd.chunk.js.map"
+    "main.css": "/cau-2025-mc-irona/static/css/main.8f9edbd0.css",
+    "main.js": "/cau-2025-mc-irona/static/js/main.79a1e42f.js",
+    "static/js/453.1cd3c6bd.chunk.js": "/cau-2025-mc-irona/static/js/453.1cd3c6bd.chunk.js",
+    "index.html": "/cau-2025-mc-irona/index.html",
+    "main.8f9edbd0.css.map": "/cau-2025-mc-irona/static/css/main.8f9edbd0.css.map",
+    "main.79a1e42f.js.map": "/cau-2025-mc-irona/static/js/main.79a1e42f.js.map",
+    "453.1cd3c6bd.chunk.js.map": "/cau-2025-mc-irona/static/js/453.1cd3c6bd.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.8f9edbd0.css",
-    "static/js/main.986ed837.js"
+    "static/js/main.79a1e42f.js"
   ]
 }

@@ -16,16 +16,6 @@ export default function FakeAlarm({ difficulty, onComplete }) {
       navigate("/");
       return;
     }
-
-    const audio = new Audio("/alarmTest.mp3");
-    audio.loop = true;
-    audio.play().catch((e) => console.warn("🔇 소리 실패", e));
-    audioRef.current = audio;
-
-    return () => {
-      audio.pause();
-      audioRef.current = null;
-    };
   }, [alarm, navigate]);
 
   const handleSnooze = () => {

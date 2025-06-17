@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import NumberSequenceGame from "../games/NumberSequence";
 import ArithmeticGame from "../games/ArithmeticGame";
@@ -36,6 +36,7 @@ export default function GameAlarmHandler() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const audioRef = useRef(null);
   const [SelectedGame, setSelectedGame] = useState(null);
   const alarm = location.state?.alarm;
 
@@ -43,6 +44,18 @@ export default function GameAlarmHandler() {
     // 게임 랜덤 선택
     const randomIndex = Math.floor(Math.random() * GAMES.length);
     setSelectedGame(() => GAMES[randomIndex]);
+    const audio = new Audio("/alarmTest.mp3");
+
+    if(randomIndex != 6){
+      audio.loop = true;
+      audio.play().catch((e) => console.warn("🔇 소리 실패", e));
+      audioRef.current = audio;
+    }
+
+    return () => {
+      audio.pause();
+      audioRef.current = null;
+    };
   }, []);
 
   const handleComplete = () => {

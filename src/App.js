@@ -13,7 +13,7 @@ import GamePlayPage from './pages/GamePlayPage';
 
 function App() {
   return (
-    <Router>
+    <Router basename={process.env.PUBLIC_URL}>
       <Routes>
         <Route path="/" element={<Splash />} />
         <Route path="/HomePage" element={<HomePage />} />

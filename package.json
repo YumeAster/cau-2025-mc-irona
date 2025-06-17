@@ -1,7 +1,7 @@
 {
   "name": "irona",
   "version": "0.1.0",
-  "homepage": ".",
+  "homepage": "http://yumeaster.github.io/cau-2025-mc-irona/",
   "private": true,
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
